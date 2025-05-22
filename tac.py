@@ -31,28 +31,40 @@ async def SoftCheck(ctx, serverId):
             else:
                 #await ctx.send(f'{line}: {req.text}')
                 string += f"\n{line.replace('_','\_')}: {req.text}"
+                await ctx.send(f'Join {line}\'s stream: https://www.twitch.tv/{line}')
         await ctx.send(string + '\nCheck complete!', ephemeral=True)
     except Exception as e:
         await ctx.send('Please add streamers to the file.', ephemeral=True)
         print(e)
         
 
+def serverIdChecker():
+    serverIds = []
+    for folder in os.listdir('Servers'):
+        serverIds.append(folder)
+    return serverIds
 
-async def HardCheck(bot):
-    serverId = 1372412397528158288 #will be filled when loopibng through servers
-    file = open(f'Servers/{serverId}/streamers.txt', 'r')
-    listtxt = open(f'Servers/{serverId}/list.txt', 'r')
+def channelIdChecker(id):
+    file = open(f'Servers/{id}/list.txt', 'r')
+    return int(file.readlines()[1].strip('\n'))
+
+def ListChecker(id):
+    file = open(f'Servers/{id}/list.txt', 'r')
+    return file.readlines()[0].strip()
+
+async def HardCheck(bot, id, channelId, streamerList):
+    file = open(f'Servers/{id}/streamers.txt', 'r')
     thing = {}
-    ctx = bot.get_channel(listtxt.readline(1))
-    #print(ctx.id)
+    channel = bot.get_channel(channelId)
     try:
-        thing = eval(listtxt.readline(0))
+        thing = streamerList
         for name in thing:
-            if not findWordInFile(name, f'Servers/{serverId}/streamers.txt'):
-                thing.remove(name)
-                print(f'{name} removed from list')
-    except:
-        thing = {}
+            if findWordInFile(name, f'Servers/{id}/streamers.txt') == False:
+                thing.pop(name)
+                print(f'{name} removed')
+    except Exception as e:
+        print(e)
+    
     for line in file:
         line = line.strip('\n')
         req = requests.get('https://decapi.me/twitch/uptime/' + line)
@@ -62,17 +74,35 @@ async def HardCheck(bot):
             if not thing.get(line) or thing.get(line) == False:
                 print(f'{line} is online')
                 thing.update({line: True})
-                await ctx.send(f'Join {line}\'s stream: https://www.twitch.tv/{line}')
+                await channel.send(f'Join {line}\'s stream: https://www.twitch.tv/{line}')
                 #await ctx.send(f"{randString(line)} \n https://www.twitch.tv/{line}")
 
-    listtxt = open(f'Servers/{serverId}/list.txt', 'w')
-    listtxt.write(f"{str(thing)}\n{str(ctx.id)}\n")
-    listtxt.close()
+    listtxtt = open(f'Servers/{id}/list.txt', 'w')
+    listtxtt.write(f"{str(thing)}\n{str(channel.id)}\n")
+    listtxtt.close()
+    file.close()
 
-async def rewrite():
-    '''
-    this will be a rewrite of hardcheck
-    loop through each folder
-    and then check each channelid file in each folder
-    '''
+
+
+async def rewrite(bot):
+    for serverid in serverIdChecker():
+        try:
+            channelId = channelIdChecker(serverid)
+            strList = eval(ListChecker(serverid))
+            if (strList == None) or (channelId == None) or (channelId == 0):
+                return
+            await HardCheck(bot, serverid, channelId, strList)
+        except Exception as e:
+            print(e)
+            if('Errno 2' in str(e)):
+                file = open(f'Servers/{serverid}/list.txt', 'w')
+                file.write("{}\n")
+                file.write("0\n")
+                file.close()
+                print('List File created')
+
+            try:
+                os.makedirs(f'Servers/{serverid}')
+            except Exception as e:
+                print(e)
 

@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from Bot.utils import token, addAllCogs
 import asyncio
-from tac import HardCheck
+from tac import rewrite
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -10,7 +10,6 @@ intents.message_content = True
 client = commands.Bot(command_prefix='!', intents=intents)
 running = True
 waitTime = 10 # seconds
-channel = 1372412397985333361
 iterations = 0
 
 async def main():
@@ -18,7 +17,7 @@ async def main():
         global iterations
         iterations += 1
         print(f"Iteration {iterations}")
-        await HardCheck(client)
+        await rewrite(client)
         await asyncio.sleep(waitTime)
 
 @client.event

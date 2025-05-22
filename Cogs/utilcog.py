@@ -1,6 +1,7 @@
+import discord
 from discord.ext import commands
 from tac import SoftCheck
-from Bot.utils import addStreamer, resetStreamers, embed
+from Bot.utils import addStreamer, resetStreamers, embed, setChannel
 
 class Utils(commands.Cog):
     def __init__(self, bot):
@@ -17,8 +18,12 @@ class Utils(commands.Cog):
     @commands.hybrid_command()
     async def check(self, ctx):
         """SoftCheck of the twitch api"""
-        await ctx.send(embed=embed)
         await SoftCheck(ctx, ctx.guild.id)
+
+    @commands.hybrid_command()
+    async def setchannel(self, ctx, channel: discord.TextChannel):
+        await setChannel(ctx, ctx.guild.id, channel.id)
+        await ctx.send(f'Channel set to {channel.mention}!', ephemeral=True)
 
     @commands.hybrid_group(fallback='add')
     async def streamers(self, ctx, name: str):

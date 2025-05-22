@@ -25,9 +25,19 @@ async def resetStreamers(ctx, serverId):
     file = open(f'Servers/{serverId}/streamers.txt', 'w')
     file.close()
 
+async def setChannel(ctx, serverId, channelId):
+    path = f'Servers/{serverId}'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    file = open(f'Servers/{serverId}/list.txt', 'w')
+    file.write("{}\n")
+    file.write(str(channelId) + '\n')
+    file.close()
+
 
 embed= discord.Embed(title="title", description="description", color=0xff0000)
 embed.add_field(name="field", value="value", inline=False)
+
 
 def findWordInFile(word, file):
     with open(file) as f:
@@ -35,3 +45,4 @@ def findWordInFile(word, file):
             if word in line:
                 return True
             
+    return False
