@@ -66,13 +66,13 @@ embed.add_field(name="field", value="value", inline=False)
 HelpEmbed = discord.Embed(title="Basic Help", color=0xff0000)
 HelpEmbed.description = "First use **/setchannel** to set the channel that the bot will send the Ping to\n" \
 "Then use **/streamers add** to add streamers to the file"
-HelpEmbed.add_field(name="Commands", value="**/ping** **/streamers add** **/streamers remove** **/streamers reset** **/setchannel** **/h**", inline=False)
-HelpEmbed.add_field(name="/ping", value="Pings the bot", inline=False)
+HelpEmbed.add_field(name="Commands", value="**/ping** **/streamers add** **/streamers remove** **/streamers reset** **/setchannel** **/helpstream**", inline=False)
+HelpEmbed.add_field(name="/ping", value="Displays Test Embed", inline=False)
 HelpEmbed.add_field(name="/streamers add", value="Adds a streamer to the file", inline=False)
 HelpEmbed.add_field(name="/streamers remove", value="Removes a streamer from the file", inline=False)
 HelpEmbed.add_field(name="/streamers reset", value="Resets the streamers file", inline=False)
 HelpEmbed.add_field(name="/setchannel", value="Sets the channel that the bot will send the Ping to", inline=False)
-HelpEmbed.add_field(name="/h", value="Displays this message", inline=False)
+HelpEmbed.add_field(name="/helpstream", value="Displays this message", inline=False)
 
 
 
