@@ -94,12 +94,16 @@ async def rewrite(bot):
             await HardCheck(bot, serverid, channelId, strList)
         except Exception as e:
             print(e)
-            if('Errno 2' in str(e)):
+            if('list.txt' in str(e)):
                 file = open(f'Servers/{serverid}/list.txt', 'w')
                 file.write("{}\n")
                 file.write("0\n")
                 file.close()
                 print('List File created')
+            elif ('streamers.txt' in str(e)):
+                file = open(f'Servers/{serverid}/streamers.txt', 'w')
+                file.close()
+                print('Streamers File created')
 
             try:
                 os.makedirs(f'Servers/{serverid}')

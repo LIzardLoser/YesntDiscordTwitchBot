@@ -9,7 +9,7 @@ intents.message_content = True
 
 client = commands.Bot(command_prefix='!', intents=intents)
 running = True
-waitTime = 10 # seconds
+waitTime = 60 # seconds
 iterations = 0
 
 async def main():

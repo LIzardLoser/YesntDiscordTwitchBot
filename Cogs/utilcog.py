@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from tac import SoftCheck
-from Bot.utils import addStreamer, resetStreamers, embed, setChannel
+from Bot.utils import addStreamer, resetStreamers, setChannel, HelpEmbed, embed
 
 class Utils(commands.Cog):
     def __init__(self, bot):
@@ -15,6 +15,11 @@ class Utils(commands.Cog):
     async def ping(self, ctx):
         await ctx.send(embed=embed, ephemeral=True)
 
+    @commands.hybrid_command(aliases=['h'])
+    async def helpstream(self, ctx):
+        '''Displays help embed'''
+        await ctx.send(embed=HelpEmbed, ephemeral=True)
+
     @commands.hybrid_command()
     async def check(self, ctx):
         """SoftCheck of the twitch api"""
@@ -22,18 +27,18 @@ class Utils(commands.Cog):
 
     @commands.hybrid_command()
     async def setchannel(self, ctx, channel: discord.TextChannel):
-        await setChannel(ctx, ctx.guild.id, channel.id)
-        await ctx.send(f'Channel set to {channel.mention}!', ephemeral=True)
+        result = await setChannel(ctx.guild.id, channel)
+        await ctx.send(result, ephemeral=True)
 
     @commands.hybrid_group(fallback='add')
     async def streamers(self, ctx, name: str):
-        await addStreamer(ctx, ctx.guild.id, name)
-        await ctx.send('Adding streamer...', ephemeral=True)
+        result = await addStreamer(ctx.guild.id, name)
+        await ctx.send(result, ephemeral=True)
 
     @streamers.command(name='reset', aliases=['rm'])
     async def reset(self, ctx):
-        await resetStreamers(ctx, ctx.guild.id)
-        await ctx.send('Streamers reset!', ephemeral=True)
+        result = await resetStreamers(ctx.guild.id)
+        await ctx.send(result, ephemeral=True)
 
 
 async def setup(bot):
