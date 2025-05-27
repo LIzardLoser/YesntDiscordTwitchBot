@@ -1,7 +1,7 @@
 import requests
 import os
 import random as rand
-from Bot.utils import findWordInFile
+from Bot.utils import findWordInFile, PathChecks
 
 running = True
 # This is a simple script to check the uptime of Twitch streamers using the DecAPI service. -- tac : Twitch Api Checker
@@ -12,16 +12,13 @@ def randString(streamer, serverId):
         choices.append(line.replace('{streamer}', streamer).strip('\n'))
     return rand.choice(choices)
 
-
-async def SoftCheck(ctx, serverId):
+async def SoftCheck(ctx, serverId, ping):
+    '''Checks the api, if ping then it sends the stream link and not the uptimes.'''
     try:
-        path = f'Servers/{serverId}'
+        paths = await PathChecks(serverId, ctx)
+        streamers = paths[2]
         string = ''  
-        if not os.path.exists(path):
-            os.makedirs(path)
-            await ctx.send('Directory created, please add streamers to the file.', ephemeral=True)
-            return
-        file = open(f'Servers/{serverId}/streamers.txt', 'r') 
+        file = open(streamers, 'r') 
         for line in file:
             line = line.strip('\n')
             req = requests.get('https://decapi.me/twitch/uptime/' + line)
@@ -31,13 +28,15 @@ async def SoftCheck(ctx, serverId):
             else:
                 #await ctx.send(f'{line}: {req.text}')
                 string += f"\n{line.replace('_','\_')}: {req.text}"
-                await ctx.send(f'Join {line}\'s stream: https://www.twitch.tv/{line}')
-        await ctx.send(string + '\nCheck complete!', ephemeral=True)
+                if ping == True:
+                    await ctx.send(f'Join {line}\'s stream: https://www.twitch.tv/{line}')
+        if ping == False:
+            await ctx.send(string + '\nCheck complete!', ephemeral=True)
     except Exception as e:
         await ctx.send('Please add streamers to the file.', ephemeral=True)
         print(e)
         
-
+####These check and return needed variables#######
 def serverIdChecker():
     serverIds = []
     for folder in os.listdir('Servers'):
@@ -51,14 +50,17 @@ def channelIdChecker(id):
 def ListChecker(id):
     file = open(f'Servers/{id}/list.txt', 'r')
     return file.readlines()[0].strip()
+##################################################
 
 async def HardCheck(bot, id, channelId, streamerList):
-    file = open(f'Servers/{id}/streamers.txt', 'r')
+    '''The Main function that checks the streamers and sends messages to the channel.'''
+    paths = await PathChecks(id)
+    file = open(paths[2], 'r')
     thing = {}
     channel = bot.get_channel(channelId)
     try:
         thing = streamerList
-        for name in thing:
+        for name in list(thing):
             if findWordInFile(name, f'Servers/{id}/streamers.txt') == False:
                 thing.pop(name)
                 print(f'{name} removed')
@@ -84,7 +86,8 @@ async def HardCheck(bot, id, channelId, streamerList):
 
 
 
-async def rewrite(bot):
+async def MainLoop(bot):
+    '''Main loop that checks all servers and channels'''
     for serverid in serverIdChecker():
         try:
             channelId = channelIdChecker(serverid)

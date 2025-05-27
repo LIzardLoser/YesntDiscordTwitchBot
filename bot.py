@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from Bot.utils import token, addAllCogs
 import asyncio
-from tac import rewrite
+from tac import MainLoop
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -17,14 +17,14 @@ async def main():
         global iterations
         iterations += 1
         print(f"Iteration {iterations}")
-        await rewrite(client)
+        await MainLoop(client)
         await asyncio.sleep(waitTime)
 
 @client.event
 async def on_ready():
     print(f'Logged in as {client.user}')
     await addAllCogs(client)  
-    await client.tree.sync()                               # Remove this when production
+    #await client.tree.sync()   # Syncs commands every time, remove when actually using the bot
     await main()  # Start the main loop in the background
 
 

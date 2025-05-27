@@ -6,5 +6,6 @@
  4. [X] Make soft check actually ping when streamer steaming
  5. [ ] Allow user to set role to be pinged
  6. [X] Dont allow duplicate name in streamer file
- 7. [ ] **HARD MAYBE** edit previous message
+ 7. [ ] Check when streamer is online ping message
+ 8. [ ] **HARD MAYBE** edit previous message
 		-if i cant ill just send message when streamer end stream but no ping
